@@ -2,6 +2,13 @@
 
 **Análisis cuantitativo de Gamma Exposure (GEX) para mercados $NQ (Nasdaq-100) y $NDX (Nasdaq-100 Index)**
 
+> ⚠️ **Estado actual del proyecto**: este repositorio contiene hoy la base cuantitativa en Python
+> (`src/core/gex_calculator.py`, `src/core/options_chain.py`, `config/config.py`) más su suite de
+> tests (`tests/`) y CI. El resto de las secciones de este README y de `ROADMAP.md`/`SKILL.md`
+> (UI Next.js, motor LLM, adaptador Alpaca, persistencia Prisma/SQLite, backtesting, dashboards)
+> describen la **visión objetivo** del proyecto y **aún no están implementadas**. Úsalas como guía
+> de diseño, no como documentación de funcionalidad existente.
+
 ## 🎯 Objetivo
 
 Construir una plataforma escalable para:
@@ -12,12 +19,17 @@ Construir una plataforma escalable para:
 
 ## 📦 Características Principales
 
-- ✅ Extracción en tiempo real de cadenas de opciones
-- ✅ Cálculo de GEX, Vanna, Charm por strike
-- ✅ Identificación de niveles de soporte/resistencia
-- ✅ Dashboards interactivos
-- ✅ Backtesting de estrategias
-- ✅ API backend para integración
+Implementado hoy:
+- ✅ Cálculo de GEX (Black-Scholes) e identificación de gamma flip points/soporte-resistencia
+- ✅ Fetch de cadenas de opciones vía yfinance con limpieza y resumen de datos
+- ✅ Tests unitarios (`pytest`) y CI (GitHub Actions)
+
+Planeado (ver `ROADMAP.md`):
+- ⏳ Extracción en tiempo real multi-fuente (Alpha Vantage, Alpaca)
+- ⏳ Cálculo de Vanna/Charm
+- ⏳ Dashboards interactivos
+- ⏳ Backtesting de estrategias
+- ⏳ API backend para integración
 
 ## 🗂️ Estructura del Proyecto
 
@@ -62,17 +74,29 @@ pip install -r requirements.txt
 ```python
 from src.core import GEXCalculator, OptionsChain
 
-# Obtener cadena de opciones para NQ
-chain = OptionsChain(symbol='NQ', expiration='2026-07-15')
+# Obtener cadena de opciones para un símbolo (p.ej. QQQ)
+chain = OptionsChain(symbol='QQQ', data_source='yfinance')
 data = chain.fetch()
+cleaned = chain.clean_data()
 
 # Calcular GEX
-calculator = GEXCalculator(chain_data=data)
-gex_levels = calculator.compute_gex()
+calculator = GEXCalculator(spot_price=chain.spot_price)
+gex_levels = calculator.compute_gex(cleaned)
 
-# Identificar flip points
-flip_points = calculator.find_gamma_flips()
+# Identificar flip points y niveles de soporte/resistencia
+flip_points = calculator.find_gamma_flip_points(gex_levels)
+levels = calculator.find_support_resistance(gex_levels)
 ```
+
+### Tests
+
+```bash
+pip install -e ".[dev]"
+pytest tests/ -v
+```
+
+Un workflow de CI (`.github/workflows/ci.yml`) ejecuta automáticamente `pytest`, `black --check`
+y `pylint` en cada push/PR.
 
 ## 📊 Fuentes de Datos
 
