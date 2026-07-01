@@ -105,7 +105,13 @@ class TestComputeGex:
         assert np.isclose(result["gex"].iloc[0], baseline["gex"].iloc[0])
 
     def test_matches_reference_loop_implementation(self, options_data):
-        """The vectorized implementation must match a naive per-row loop."""
+        """Verify the NumPy-vectorized compute_gex is a correct optimization.
+
+        compute_gex was rewritten from a nested Python loop to vectorized
+        NumPy broadcasting for performance. This test guards against
+        regressions by asserting the vectorized output is numerically
+        identical to a naive per-row loop implementation.
+        """
         calculator = GEXCalculator(spot_price=6600)
         price_levels = np.array([6500.0, 6600.0, 6700.0])
 
