@@ -1,5 +1,11 @@
 # Roadmap - GEX Quant Analysis Platform
 
+> ⚠️ **Nota de estado**: este ROADMAP describe la visión objetivo de "GammaDesk Terminal"
+> (incluyendo UI Next.js, motor LLM, adaptador Alpaca y persistencia Prisma/SQLite). A día de hoy
+> el repositorio solo contiene la Fase 1 parcial: `GEXCalculator` y `OptionsChain` en Python, sus
+> tests unitarios y CI. Los hitos marcados como completados en la Fase 1 que se refieren a
+> componentes de UI/LLM/DB **no existen todavía en este repo** y deben tratarse como pendientes.
+
 ## Visión General
 
 GammaDesk Terminal es una plataforma de análisis cuantitativo de microestructura de derivados que combina:
